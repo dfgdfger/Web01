@@ -1,6 +1,5 @@
 <html>
-  <body>
-    <div style="font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f5f7fa;">
+  <body><div style="font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f5f7fa;">
   <header style="text-align: center; margin-bottom: 30px;">
     <h1 style="color: #2d3748; margin: 0;">POKE Chain Control Interface</h1>
     <p style="color: #4a5568;">Decentralized blockchain for the POKE ecosystem</p>
@@ -28,11 +27,19 @@
           <span style="font-weight: bold;">Network Status</span>
           <span style="color: #38a169; font-weight: bold;">Active</span>
         </div>
+        <div style="display: flex; justify-content: space-between; padding: 10px 0;">
+          <span style="font-weight: bold;">Validation Status</span>
+          <span id="chainValidationEl" style="color: #d69e2e; font-weight: bold;">Pending</span>
+        </div>
       </div>
       
       <div style="background: #edf2f7; padding: 15px; border-radius: 8px; margin-top: 20px;">
         <h3 style="margin-top: 0; color: #2d3748;">Metamask Integration</h3>
         <p style="margin-bottom: 10px; font-size: 0.9rem;">Add POKE Chain to Metamask:</p>
+        <button onclick="addChainToMetaMask()" style="background: #667eea; color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 10px;">
+          Add POKE Chain to Metamask
+        </button>
+        <div id="addChainStatusEl" style="margin-top: 10px; padding: 10px; border-radius: 6px; display: none;"></div>
         <div style="background: #f7fafc; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
           <p style="margin: 0; font-weight: bold; color: #2d3748;">Chain ID</p>
           <code style="color: #3182ce; font-size: 0.85rem;">0x3039</code>
@@ -44,6 +51,18 @@
         <div style="background: #f7fafc; padding: 10px; border-radius: 6px;">
           <p style="margin: 0; font-weight: bold; color: #2d3748;">Block Explorer</p>
           <code style="color: #3182ce; font-size: 0.85rem;">https://explorer.pokechain.com</code>
+        </div>
+      </div>
+      
+      <div style="background: #edf2f7; padding: 15px; border-radius: 8px; margin-top: 20px;">
+        <h3 style="margin-top: 0; color: #2d3748;">Chain Validation Proof</h3>
+        <div style="background: #f7fafc; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
+          <p style="margin: 0; font-weight: bold; color: #2d3748;">Chain Merkle Root</p>
+          <code id="chainMerkleRootEl" style="color: #3182ce; font-size: 0.85rem; word-break: break-all;">0x7a3b...9c2d</code>
+        </div>
+        <div style="background: #f7fafc; padding: 10px; border-radius: 6px;">
+          <p style="margin: 0; font-weight: bold; color: #2d3748;">Signature</p>
+          <code id="chainSignatureEl" style="color: #3182ce; font-size: 0.85rem; word-break: break-all;">0x1f4a...8b3c</code>
         </div>
       </div>
       
@@ -69,6 +88,7 @@
         <div>
           <h3 style="margin: 0; color: #2d3748;">PKI Token</h3>
           <p style="margin: 0; color: #718096; font-size: 0.9rem;">POKE Chain Native Token</p>
+          <p id="tokenValidationEl" style="margin: 5px 0 0 0; color: #d69e2e; font-size: 0.8rem; font-weight: bold;">● Validation Pending</p>
         </div>
       </div>
       
@@ -110,11 +130,23 @@
       </div>
 
       <div style="background: #edf2f7; padding: 15px; border-radius: 8px; margin-top: 20px;">
+        <h3 style="margin-top: 0; color: #2d3748;">Token Validation Proof</h3>
+        <div style="background: #f7fafc; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
+          <p style="margin: 0; font-weight: bold; color: #2d3748;">Contract Verification</p>
+          <code id="tokenVerificationEl" style="color: #3182ce; font-size: 0.85rem; word-break: break-all;">Not Verified</code>
+        </div>
+        <div style="background: #f7fafc; padding: 10px; border-radius: 6px;">
+          <p style="margin: 0; font-weight: bold; color: #2d3748;">Signature</p>
+          <code id="tokenSignatureEl" style="color: #3182ce; font-size: 0.85rem; word-break: break-all;">0x5b2c...7e9a</code>
+        </div>
+      </div>
+      
+      <div style="background: #edf2f7; padding: 15px; border-radius: 8px; margin-top: 20px;">
         <h3 style="margin-top: 0; color: #2d3748;">Token Details</h3>
         <p style="margin-bottom: 10px; font-size: 0.9rem;">For manual MetaMask addition:</p>
         <div style="background: #f7fafc; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
           <p style="margin: 0; font-weight: bold; color: #2d3748;">Token Contract Address</p>
-          <code id="tokenDetailsContractAddressEl" style="color: #3182ce; font-size: 0.85rem; cursor: pointer; word-break: break-all;" onclick="copyToClipboard('tokenContractAddress')">0x7c2a...4e8f</code>
+          <code style="color: #3182ce; font-size: 0.85rem; word-break: break-all;">0x7c2a...4e8f</code>
         </div>
         <div style="background: #f7fafc; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
           <p style="margin: 0; font-weight: bold; color: #2d3748;">Token Symbol</p>
@@ -247,6 +279,10 @@
           Validate Chain
         </button>
         
+        <button onclick="validateToken()" style="background: #9f7aea; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.3s;">
+          Validate Token
+        </button>
+        
         <button onclick="apiKeyModalEl.style.display = 'flex'" style="background: #9f7aea; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.3s;">
           API Keys
         </button>
@@ -346,12 +382,20 @@
       return '0x' + Array.from({length: 40}, () => Math.floor(Math.random()*16).toString(16)).join('');
     }
 
+    // Generate a random hash for proofs
+    function generateRandomHash() {
+      return '0x' + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
+    }
+
     // Chain state and API simulation
     const blockchainState = {
       chainId: 'POKE-1',
       blockHeight: 12,
       lastBlockHash: '0x2f7a...3d9c',
-      networkStatus: 'Active'
+      networkStatus: 'Active',
+      isValid: false,
+      merkleRoot: generateRandomHash(),
+      signature: generateRandomHash()
     };
 
     const tokenState = {
@@ -361,7 +405,10 @@
       circulatingSupply: '350,000,000 PKI',
       holders: 12487,
       volume24h: '24,589,312 PKI',
-      imageUrl: '' // Will be populated when token icon is generated
+      imageUrl: '', // Will be populated when token icon is generated
+      isValid: false,
+      signature: generateRandomHash(),
+      verificationStatus: 'Not Verified'
     };
 
     const transactionsList = [
@@ -393,7 +440,12 @@
 
     // Simulated API endpoints - Fixed to return token details including contract address
     const apiSimulation = {
-      '/api/v1/chain': () => blockchainState,
+      '/api/v1/chain': () => ({
+        ...blockchainState,
+        isValid: blockchainState.isValid,
+        merkleRoot: blockchainState.merkleRoot,
+        signature: blockchainState.signature
+      }),
       '/api/v1/blocks': () => ({ blocks: transactionsList.map((tx, i) => ({ id: i + 1, hash: `0x${Math.random().toString(16).substring(2)}`, txCount: 3 })) }),
       '/api/v1/tx': () => ({ transactions: transactionsList }),
       '/api/v1/token/PKI': () => ({ 
@@ -401,7 +453,10 @@
         symbol: 'PKI',
         name: 'POKE Chain Native Token',
         contractAddress: tokenState.contractAddress, // Ensure full address is returned
-        imageUrl: tokenState.imageUrl
+        imageUrl: tokenState.imageUrl,
+        isValid: tokenState.isValid,
+        signature: tokenState.signature,
+        verificationStatus: tokenState.verificationStatus
       }),
       '/api/v1/bridge/chains': () => ({ chains: supportedChains }),
       '/api/v1/bridge/tokens': () => ({ tokens: supportedTokens }),
@@ -449,12 +504,12 @@
       });
     }
 
-    // Generate vinyl-style token icon
+    // Generate PKI token icon with vinyl graphic
     async function generateTokenIcon() {
       tokenIconImgEl.src = "https://placehold.co/50x50/000000/FFFFFF?text=..."; // Loading placeholder
       try {
         // Generate vinyl graphic with PKI text using the global generateImage function
-        const dataUrl = await generateImage("vintage vinyl record graphic with grooves, centered, with 'PKI' written in bold white text, circular design, retro style with musical notes, vibrant colors");
+        const dataUrl = await root.generateImage("vintage vinyl record graphic with grooves, centered, with 'PKI' written in bold white circular text, retro style with musical notes, vibrant purple and gold colors, detailed circular design");
         
         if (dataUrl && typeof dataUrl === 'string') {
           tokenIconImgEl.src = dataUrl;
@@ -468,6 +523,63 @@
         tokenIconImgEl.src = "https://placehold.co/50x50/000000/FFFFFF?text=PKI";
         tokenState.imageUrl = ""; // Clear any previous image URL
       }
+    }
+
+    // Add chain to MetaMask
+    function addChainToMetaMask() {
+      if (typeof window.ethereum !== 'undefined') {
+        const chainId = '0x3039'; // 12357 in decimal
+        const chainName = 'POKE Chain';
+        const rpcUrls = ['https://rpc.pokechain.com'];
+        const blockExplorerUrls = ['https://explorer.pokechain.com'];
+        const nativeCurrency = {
+          name: 'PKI',
+          symbol: 'PKI',
+          decimals: 18
+        };
+        
+        const params = [{
+          chainId: chainId,
+          chainName: chainName,
+          nativeCurrency: nativeCurrency,
+          rpcUrls: rpcUrls,
+          blockExplorerUrls: blockExplorerUrls
+        }];
+        
+        window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: params,
+        })
+        .then((success) => {
+          showAddChainStatus('POKE Chain added successfully!', 'success');
+        })
+        .catch((error) => {
+          console.error('Error adding chain to MetaMask:', error);
+          showAddChainStatus('Error adding chain: ' + error.message, 'error');
+        });
+      } else {
+        showAddChainStatus('MetaMask is not installed. Please install MetaMask and try again.', 'error');
+      }
+    }
+
+    // Show add chain status message
+    function showAddChainStatus(message, type) {
+      const statusEl = addChainStatusEl;
+      statusEl.style.display = 'block';
+      statusEl.textContent = message;
+      
+      if (type === 'success') {
+        statusEl.style.backgroundColor = '#c6f6d5';
+        statusEl.style.color = '#276749';
+      } else {
+        statusEl.style.backgroundColor = '#fed7d7';
+        statusEl.style.color = '#9b2c2c';
+      }
+
+      // Hide after 5 seconds
+      setTimeout(() => {
+        statusEl.style.display = 'none';
+      }, 5000);
     }
 
     // Copy to clipboard function - Fixed for hidden inputs
@@ -489,6 +601,10 @@
       blockHeightEl.textContent = blockchainState.blockHeight;
       lastHashEl.textContent = blockchainState.lastBlockHash;
       
+      // Set validation proofs
+      chainMerkleRootEl.textContent = blockchainState.merkleRoot.substring(0, 6) + '...' + blockchainState.merkleRoot.substring(58);
+      chainSignatureEl.textContent = blockchainState.signature.substring(0, 6) + '...' + blockchainState.signature.substring(58);
+      
       // Set initial token state
       totalSupplyEl.textContent = tokenState.totalSupply;
       circulatingEl.textContent = tokenState.circulatingSupply;
@@ -499,13 +615,43 @@
       const shortAddress = tokenState.contractAddress.substring(0, 6) + '...' + tokenState.contractAddress.substring(38);
       tokenContractAddress.value = tokenState.contractAddress;
       document.querySelector('code[onclick="copyToClipboard(\'tokenContractAddress\')"]').textContent = shortAddress;
-      tokenDetailsContractAddressEl.textContent = shortAddress;
+      
+      // Set token validation proofs
+      tokenSignatureEl.textContent = tokenState.signature.substring(0, 6) + '...' + tokenState.signature.substring(58);
+      tokenVerificationEl.textContent = tokenState.verificationStatus;
+      
+      // Update validation status display
+      updateValidationStatus();
       
       // Render transactions
       renderTransactions();
       
       // Generate token icon
       await generateTokenIcon();
+    }
+
+    // Update validation status display
+    function updateValidationStatus() {
+      // Chain validation
+      if (blockchainState.isValid) {
+        chainValidationEl.textContent = 'Valid';
+        chainValidationEl.style.color = '#38a169';
+      } else {
+        chainValidationEl.textContent = 'Pending';
+        chainValidationEl.style.color = '#d69e2e';
+      }
+      
+      // Token validation
+      const tokenValidationEl = document.getElementById('tokenValidationEl');
+      if (tokenState.isValid) {
+        tokenValidationEl.textContent = '● Valid';
+        tokenValidationEl.style.color = '#38a169';
+        tokenVerificationEl.textContent = 'Verified';
+        tokenVerificationEl.style.color = '#38a169';
+      } else {
+        tokenValidationEl.textContent = '● Validation Pending';
+        tokenValidationEl.style.color = '#d69e2e';
+      }
     }
 
     // Generate random address for faucet
@@ -702,9 +848,54 @@
     function validateChain() {
       // Simulate validation delay
       showToast('Validating chain...');
+      chainValidationEl.textContent = 'Validating...';
+      chainValidationEl.style.color = '#d69e2e';
+      
       setTimeout(() => {
         const isValid = Math.random() > 0.1; // 90% chance of being valid
+        blockchainState.isValid = isValid;
+        
+        // Update merkle root and signature
+        blockchainState.merkleRoot = generateRandomHash();
+        blockchainState.signature = generateRandomHash();
+        
+        // Update UI
+        chainMerkleRootEl.textContent = blockchainState.merkleRoot.substring(0, 6) + '...' + blockchainState.merkleRoot.substring(58);
+        chainSignatureEl.textContent = blockchainState.signature.substring(0, 6) + '...' + blockchainState.signature.substring(58);
+        
+        updateValidationStatus();
+        
         showToast(isValid ? 'Chain validation successful: All blocks valid' : 'Chain validation failed: Invalid block detected');
+      }, 1500);
+    }
+
+    // Validate token function
+    function validateToken() {
+      // Simulate validation delay
+      showToast('Validating token...');
+      const tokenValidationEl = document.getElementById('tokenValidationEl');
+      tokenValidationEl.textContent = '● Validating...';
+      tokenValidationEl.style.color = '#d69e2e';
+      
+      setTimeout(() => {
+        const isValid = Math.random() > 0.1; // 90% chance of being valid
+        tokenState.isValid = isValid;
+        tokenState.verificationStatus = isValid ? 'Verified' : 'Verification Failed';
+        tokenState.signature = generateRandomHash();
+        
+        // Update UI
+        tokenSignatureEl.textContent = tokenState.signature.substring(0, 6) + '...' + tokenState.signature.substring(58);
+        tokenVerificationEl.textContent = tokenState.verificationStatus;
+        
+        if (isValid) {
+          tokenVerificationEl.style.color = '#38a169';
+        } else {
+          tokenVerificationEl.style.color = '#e53e3e';
+        }
+        
+        updateValidationStatus();
+        
+        showToast(isValid ? 'Token validation successful: Contract is verified' : 'Token validation failed: Contract verification failed');
       }, 1500);
     }
 
@@ -714,8 +905,15 @@
       setTimeout(() => {
         const deployed = Math.random() > 0.05; // 95% success rate
         if (deployed) {
-          showToast('PKI token contract deployed successfully at address: 0x' + 
-                   Math.random().toString(16).substring(2, 10) + '...');
+          tokenState.contractAddress = generateContractAddress();
+          tokenState.signature = generateRandomHash();
+          
+          // Update UI
+          const shortAddress = tokenState.contractAddress.substring(0, 6) + '...' + tokenState.contractAddress.substring(38);
+          tokenContractAddress.value = tokenState.contractAddress;
+          document.querySelector('code[onclick="copyToClipboard(\'tokenContractAddress\')"]').textContent = shortAddress;
+          
+          showToast('PKI token contract deployed successfully at address: ' + tokenState.contractAddress);
         } else {
           showToast('Token deployment failed: Insufficient gas');
         }
@@ -873,9 +1071,15 @@
   </script>
 
   <style>
+    /* Removed conflicting .progress-bar class and added direct styling */
     .text-green-500 { color: #38a169; }
     .text-yellow-500 { color: #d69e2e; }
     .text-red-500 { color: #e53e3e; }
+    
+    /* Added cursor pointer for clickable contract address */
+    #tokenContractAddress {
+      cursor: pointer;
+    }
   </style>
 </div>
   </body>
